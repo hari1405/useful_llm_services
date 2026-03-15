@@ -1,0 +1,11 @@
+I want to build a multi-agent system that automates our EMEA regulatory compliance
+review process. The system will use an LLM to parse regulatory documents, identify
+requirements, map them to our internal policies, flag gaps, and generate a structured
+compliance report for human sign-off.
+
+Currently this process is done manually by a team of 4 analysts, takes 3 weeks per
+regulatory change, and costs approximately $2.5M annually in headcount.
+
+The proposed system would reduce this to 4 hours of AI-assisted review + 2 hours of
+human validation. Tech stack: Python, Anthropic Claude API, internal document store.
+Timeline: 3 months to MVP, 6 months to production.
