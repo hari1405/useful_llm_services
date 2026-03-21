@@ -4,7 +4,7 @@
 
 `persona-lab` is a Python terminal app that simulates user research interviews before you commit to real ones. Give it a persona description, a product scenario, and a number N — get back N diverse interview transcripts and a synthesised brief with themes, objections, blockers, and recommended follow-up questions.
 
-**Week 3 of the [useful-llm-services](../README.md) series.**
+**Part of the [useful-llm-services](../README.md) series.**
 
 ---
 
