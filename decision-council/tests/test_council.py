@@ -75,15 +75,14 @@ class TestGetProvider:
 
     def test_get_anthropic_with_key(self):
         from council.providers import AnthropicProvider
-        with patch("council.providers.anthropic") as mock_ant:
-            mock_ant.Anthropic.return_value = MagicMock()
+        with patch.object(AnthropicProvider, "__init__", return_value=None):
             provider = get_provider(PROVIDER_ANTHROPIC, api_key="sk-ant-test")
             assert isinstance(provider, AnthropicProvider)
 
     def test_get_anthropic_from_env(self, monkeypatch):
         monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-env")
         from council.providers import AnthropicProvider
-        with patch("council.providers.anthropic"):
+        with patch.object(AnthropicProvider, "__init__", return_value=None):
             provider = get_provider(PROVIDER_ANTHROPIC)
             assert isinstance(provider, AnthropicProvider)
 
@@ -115,8 +114,7 @@ class TestGetProvider:
 
     def test_get_custom_with_key_and_url(self):
         from council.providers import CustomProvider
-        with patch("council.providers.openai") as mock_openai:
-            mock_openai.OpenAI.return_value = MagicMock()
+        with patch.object(CustomProvider, "__init__", return_value=None):
             provider = get_provider(PROVIDER_CUSTOM, api_key="key", base_url="https://api.example.com/v1")
             assert isinstance(provider, CustomProvider)
 
@@ -126,7 +124,7 @@ class TestGetProvider:
 
     def test_provider_name_case_insensitive(self):
         from council.providers import AnthropicProvider
-        with patch("council.providers.anthropic"):
+        with patch.object(AnthropicProvider, "__init__", return_value=None):
             provider = get_provider("ANTHROPIC", api_key="sk-ant-test")
             assert isinstance(provider, AnthropicProvider)
 
@@ -139,14 +137,15 @@ class TestDecisionCouncilInit:
         assert council is not None
 
     def test_init_with_explicit_anthropic_key(self):
-        with patch("council.providers.anthropic") as mock_ant:
-            mock_ant.Anthropic.return_value = MagicMock()
+        from council.providers import AnthropicProvider
+        with patch.object(AnthropicProvider, "__init__", return_value=None):
             council = DecisionCouncil(provider="anthropic", api_key="sk-ant-test")
             assert council is not None
 
     def test_init_from_env_var(self, monkeypatch):
         monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-from-env")
-        with patch("council.providers.anthropic"):
+        from council.providers import AnthropicProvider
+        with patch.object(AnthropicProvider, "__init__", return_value=None):
             council = DecisionCouncil(provider="anthropic")
             assert council is not None
 
