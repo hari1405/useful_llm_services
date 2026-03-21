@@ -6,7 +6,7 @@ Send any proposal to a panel of 8 AI critics — CFO, skeptical engineer, PM dev
 
 Built for PMs, AI strategists, and anyone who needs to walk into a meeting battle-hardened.
 
-**Week 1 of the [useful-llm-services](../README.md) series.**
+**Part of the [useful-llm-services](../README.md) series.**
 
 ---
 
@@ -38,7 +38,7 @@ export GOOGLE_API_KEY=AI-your-key-here
 ```bash
 # 1. Clone
 git clone https://github.com/hariprasadrengarajan/useful-llm-services.git
-cd useful-llm-services/week-1-decision-council
+cd useful-llm-services/decision-council
 
 # 2. Install
 pip install -r requirements.txt
@@ -193,7 +193,7 @@ print(session.synthesis)
 ## Project Structure
 
 ```
-week-1-decision-council/
+decision-council/
 ├── council/
 │   ├── __init__.py       # Public API
 │   ├── __main__.py       # python -m council entry point

@@ -12,11 +12,11 @@ Built by [Hariprasad Rengarajan](https://linkedin.com/in/hariprasad-rengarajan) 
 
 ## The Series
 
-| Week | Tool | What It Does | Status |
-|------|------|-------------|--------|
-| 1 | [🏛️ decision-council](./week-1-decision-council/) | Send any proposal to 8 AI critics. Get a Battle Brief: hardest questions, biggest assumption, how to prep. | ✅ Live |
-| 2 | [⚖️ llm-judge](./week-2-llm-judge/) | Eval harness for LLM outputs. Plain-English criteria. Pass/fail with reasoning. Batch CSV mode. | 🚧 Mar 25 |
-| 3 | [🧪 persona-lab](./week-3-persona-lab/) | Synthetic user interview simulator. 10 conversations in 2 minutes. Synthesised brief included. | 🚧 Apr 1 |
+| Tool | What It Does | Status |
+|------|-------------|--------|
+| [🏛️ decision-council](./decision-council/) | Send any proposal to 8 AI critics. Get a Battle Brief: hardest questions, biggest assumption, how to prep. | ✅ Live |
+| [⚖️ llm-judge](./llm-judge/) | Eval harness for LLM outputs. Plain-English criteria. Pass/fail with reasoning. Batch CSV mode. | 🚧 Mar 25 |
+| [🧪 persona-lab](./persona-lab/) | Synthetic user interview simulator. 10 conversations in 2 minutes. Synthesised brief included. | 🚧 Apr 1 |
 
 ---
 
@@ -55,8 +55,8 @@ Each tool lives in its own directory and is fully self-contained:
 ```bash
 git clone https://github.com/hariprasadrengarajan/useful-llm-services.git
 
-# Week 1 — decision-council
-cd useful-llm-services/week-1-decision-council
+# decision-council
+cd useful-llm-services/decision-council
 pip install -r requirements.txt
 export ANTHROPIC_API_KEY=sk-ant-...   # or OPENAI_API_KEY, GOOGLE_API_KEY
 python -m council

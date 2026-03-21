@@ -4,7 +4,7 @@
 
 `llm-judge` is a Python terminal app that uses an LLM-as-judge to evaluate the quality of other LLM outputs against plain-English criteria you define. Batch CSV mode for running evals at scale, single-shot terminal mode for quick checks.
 
-**Week 2 of the [useful-llm-services](../README.md) series.**
+**Part of the [useful-llm-services](../README.md) series.**
 
 ---
 
