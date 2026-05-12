@@ -1,0 +1,46 @@
+[
+  {
+    "id": "factual-precision",
+    "prompt": "What is the boiling point of water at sea level?",
+    "criteria": [
+      "Must state exactly 100 degrees Celsius",
+      "Must state exactly 212 degrees Fahrenheit",
+      "Must be under 40 words"
+    ]
+  },
+  {
+    "id": "direct-answer",
+    "prompt": "What programming language was Python named after?",
+    "criteria": [
+      "Must state Monty Python or Monty Python's Flying Circus",
+      "Must not claim it was named after the snake",
+      "Must be under 30 words"
+    ]
+  },
+  {
+    "id": "concise-definition",
+    "prompt": "Define what a transformer model is in AI.",
+    "criteria": [
+      "Must mention the attention mechanism",
+      "Must be under 60 words",
+      "Must not use the phrase 'large language model' without first defining it"
+    ]
+  },
+  {
+    "id": "no-hedge",
+    "prompt": "Is Python or JavaScript more commonly used for machine learning?",
+    "criteria": [
+      "Must give a direct answer — Python or JavaScript, not both equally",
+      "Must provide at least one concrete reason",
+      "Must be under 50 words"
+    ]
+  },
+  {
+    "id": "numerical-accuracy",
+    "prompt": "How many bits are in a byte?",
+    "criteria": [
+      "Must state exactly 8",
+      "Must be a single sentence"
+    ]
+  }
+]

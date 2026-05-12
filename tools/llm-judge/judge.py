@@ -17,6 +17,12 @@ from rich.console import Console
 from rich.rule import Rule
 from rich.text import Text
 
+from llm_judge.batch import (
+    BatchReport,
+    load_batch,
+    render_markdown_report,
+    run_batch,
+)
 from llm_judge.core import JudgmentResult, LLMJudge
 from llm_judge.providers import (
     ALL_PROVIDERS,
@@ -176,6 +182,147 @@ def main(
 
     # Exit code reflects verdict
     raise typer.Exit(0 if result.overall_pass else 1)
+
+
+@app.command("batch")
+def batch_cmd(
+    file: str = typer.Argument(..., help="Path to .json or .csv batch file."),
+    model: str = typer.Option("gemini", "--model", "-m", help=f"Provider for model. One of: {', '.join(ALL_PROVIDERS)}"),
+    judge: str = typer.Option("gemini", "--judge", "-j", help="Provider for the judge."),
+    model_name: Optional[str] = typer.Option(None, "--model-name", help="Override model ID."),
+    judge_name: Optional[str] = typer.Option(None, "--judge-name", help="Override judge model ID."),
+    model_key: Optional[str] = typer.Option(None, "--model-key", help="API key for model provider."),
+    judge_key: Optional[str] = typer.Option(None, "--judge-key", help="API key for judge provider."),
+    base_url: Optional[str] = typer.Option(None, "--base-url", help="Base URL for custom provider."),
+    max_tokens: int = typer.Option(512, "--max-tokens", help="Max tokens for model response."),
+    output: Optional[str] = typer.Option(None, "--output", "-o", help="Save Markdown report to this path."),
+) -> None:
+    """
+    Run a batch of prompts from a JSON or CSV file.
+
+    JSON format:
+      [{"id": "q1", "prompt": "...", "criteria": ["...", "..."]}]
+
+    CSV format (criteria pipe-separated):
+      id,prompt,criteria
+      q1,"What is X?","Criterion one|Criterion two"
+
+    Examples:
+
+      python judge.py batch examples/sample_prompts.json --model gemini
+
+      python judge.py batch examples/sample_prompts.csv --model anthropic --judge gemini --output report.md
+    """
+    # ── Load file ──────────────────────────────────────────────────────────────
+    try:
+        items = load_batch(file)
+    except (ValueError, FileNotFoundError) as e:
+        console.print(f"[red]File error:[/red] {e}")
+        raise typer.Exit(1)
+
+    console.print()
+    console.print(Rule("[bold]⚖️  LLM Judge — Batch Mode[/bold]"))
+    console.print(f"[dim]File:[/dim]   {file}")
+    console.print(f"[dim]Items:[/dim]  {len(items)}")
+
+    # ── Resolve models & providers ─────────────────────────────────────────────
+    resolved_model = model_name or DEFAULT_MODELS.get(model.lower(), DEFAULT_MODELS["gemini"])
+    resolved_judge_model = judge_name or DEFAULT_MODELS.get(judge.lower(), DEFAULT_MODELS["gemini"])
+
+    console.print(f"[dim]Model:[/dim]  [cyan]{resolved_model}[/cyan]  ({model})")
+    console.print(f"[dim]Judge:[/dim]  [cyan]{resolved_judge_model}[/cyan]  ({judge})")
+    console.print()
+
+    try:
+        model_provider = get_provider(model, api_key=model_key, base_url=base_url)
+        effective_judge_key = judge_key or (model_key if judge.lower() == model.lower() else None)
+        judge_provider = get_provider(judge, api_key=effective_judge_key, base_url=base_url)
+    except ValueError as e:
+        console.print(f"[red]Configuration error:[/red] {e}")
+        raise typer.Exit(1)
+
+    judge_instance = LLMJudge(
+        model_provider=model_provider,
+        judge_provider=judge_provider,
+        model=resolved_model,
+        judge_model=resolved_judge_model,
+        max_tokens=max_tokens,
+    )
+
+    # ── Run with progress ──────────────────────────────────────────────────────
+    from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn
+
+    results = []
+    errors = []
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TaskProgressColumn(),
+        console=console,
+    ) as progress:
+        task = progress.add_task("Evaluating...", total=len(items))
+
+        def on_start(i: int, item) -> None:
+            progress.update(task, description=f"[{i + 1}/{len(items)}] {item.id[:30]}")
+
+        def on_done(i: int, item, result) -> None:
+            results.append(result)
+            progress.advance(task)
+
+        try:
+            report = run_batch(judge_instance, items, on_item_start=on_start, on_item_done=on_done)
+            report.source_file = file
+        except Exception as e:
+            console.print(f"[red]Error during batch run:[/red] {e}")
+            raise typer.Exit(1)
+
+    # ── Terminal summary table ─────────────────────────────────────────────────
+    from rich.table import Table
+
+    console.print()
+    table = Table(show_header=True, header_style="bold", box=None, padding=(0, 1))
+    table.add_column("ID", style="dim", no_wrap=True)
+    table.add_column("Prompt", max_width=40)
+    table.add_column("Verdict", justify="center")
+    table.add_column("Criteria", justify="center")
+    table.add_column("Confidence", justify="right")
+
+    for item, result in zip(report.items, report.results):
+        verdict_str = "[green]✅ PASS[/green]" if result.overall_pass else "[red]❌ FAIL[/red]"
+        table.add_row(
+            item.id,
+            item.prompt[:40] + ("…" if len(item.prompt) > 40 else ""),
+            verdict_str,
+            f"{result.passed_count}/{result.total_count}",
+            f"{result.confidence:.2f}",
+        )
+
+    console.print(table)
+    console.print()
+    console.print(Rule())
+
+    pass_pct = report.pass_rate * 100
+    rate_color = "green" if pass_pct >= 80 else ("yellow" if pass_pct >= 50 else "red")
+    console.print(
+        f"[bold]Pass rate:[/bold]  [{rate_color}]{report.pass_count}/{len(report.results)} "
+        f"({pass_pct:.1f}%)[/{rate_color}]"
+    )
+    console.print(f"[bold]Tokens:[/bold]    {report.total_tokens:,}  "
+                  f"([dim]{_estimate_cost(report.total_tokens, model)}[/dim])")
+    console.print(f"[bold]Time:[/bold]      {report.total_elapsed}s")
+    console.print()
+
+    # ── Save report ────────────────────────────────────────────────────────────
+    if output:
+        md = render_markdown_report(report)
+        with open(output, "w", encoding="utf-8") as f:
+            f.write(md)
+        console.print(f"[dim]Report saved → {output}[/dim]")
+        console.print()
+
+    raise typer.Exit(0 if report.pass_rate == 1.0 else 1)
 
 
 if __name__ == "__main__":
