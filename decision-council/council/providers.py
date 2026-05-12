@@ -33,7 +33,7 @@ ALL_PROVIDERS = [PROVIDER_ANTHROPIC, PROVIDER_OPENAI, PROVIDER_GEMINI, PROVIDER_
 DEFAULT_MODELS = {
     PROVIDER_ANTHROPIC: "claude-haiku-4-5-20251001",
     PROVIDER_OPENAI:    "gpt-4o-mini",
-    PROVIDER_GEMINI:    "gemini-3-flash",
+    PROVIDER_GEMINI:    "gemini-3.1-flash-lite",
     PROVIDER_CUSTOM:    "gpt-4o-mini",
 }
 
