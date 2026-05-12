@@ -1,0 +1,6 @@
+id,prompt,criteria
+factual-precision,"What is the boiling point of water at sea level?","Must state exactly 100 degrees Celsius|Must state exactly 212 degrees Fahrenheit|Must be under 40 words"
+direct-answer,"What programming language was Python named after?","Must state Monty Python or Monty Python's Flying Circus|Must not claim it was named after the snake|Must be under 30 words"
+concise-definition,"Define what a transformer model is in AI.","Must mention the attention mechanism|Must be under 60 words"
+no-hedge,"Is Python or JavaScript more commonly used for machine learning?","Must give a direct answer — Python or JavaScript|Must provide at least one concrete reason|Must be under 50 words"
+numerical-accuracy,"How many bits are in a byte?","Must state exactly 8|Must be a single sentence"

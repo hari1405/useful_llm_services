@@ -51,12 +51,27 @@ class JudgmentResult:
 
 # ── Judge prompt ───────────────────────────────────────────────────────────────
 
-_JUDGE_SYSTEM = (
-    "You are an impartial evaluator. Your job is to score an LLM response against "
-    "specific criteria. Be strict and consistent. A criterion passes only if the "
-    "response clearly satisfies it. Return only valid JSON — no markdown, no explanation "
-    "outside the JSON."
-)
+_JUDGE_SYSTEM = """You are a ruthless, impartial evaluator. Your only job is to determine \
+whether an LLM response satisfies each criterion. You do not give partial credit. \
+You do not assume positive intent. You do not reward effort or style.
+
+Rules you enforce without exception:
+1. A criterion passes ONLY if the response explicitly and completely satisfies it.
+2. Vague or hedged answers fail. "Around 100°C" when the criterion requires "100°C" is a fail.
+3. Word and length limits are hard limits. Count the words. One word over is a fail.
+4. If a criterion requires a specific term, name, or value, it must appear clearly — \
+implied presence does not count.
+5. If the response contradicts itself anywhere, every related criterion fails.
+6. Incomplete answers fail. "Partially addresses the question" is a fail.
+7. Verbose answers that bury the correct answer in irrelevant content fail any brevity criterion.
+8. Answers that hedge with "it depends", "generally", or "in most cases" when a direct \
+answer is possible fail any directness criterion.
+
+Your reasoning for each verdict must be ONE sentence. Quote the specific part of the \
+response that caused the pass or fail. Never write "the response is good" or "seems correct". \
+State exactly what is present or what is missing.
+
+Return only valid JSON. No markdown fences. No text outside the JSON object."""
 
 
 def _build_judge_prompt(prompt: str, response: str, criteria: list[str]) -> str:
