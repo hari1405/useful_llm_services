@@ -1,59 +1,122 @@
 # ⚖️ llm-judge
 
-> **Eval harness for LLM outputs. Plain-English criteria. Pass/fail with reasoning.**
+> You wrote a prompt. Does the model actually answer it well? Find out in 30 seconds.
 
-`llm-judge` is a Python terminal app that uses an LLM-as-judge to evaluate the quality of other LLM outputs against plain-English criteria you define. Batch CSV mode for running evals at scale, single-shot terminal mode for quick checks.
-
-**Part of the [useful-llm-services](../README.md) series.**
+**Part of the [useful-llm-services](../../README.md) series.**
 
 ---
 
-## Status: 🚧 Coming Week of Mar 23, 2026
+## Why I built this
 
-This package is in active development. Follow along on [LinkedIn](https://www.linkedin.com/in/hp1598/) for the build log.
+Every team I've worked with — at Google, Nextiva, Zoho — eventually asks the same question: "Is this prompt working?" The answer is usually a gut feeling. `llm-judge` makes it a number.
 
----
-
-## What It Will Do
-
-- Give it prompts + LLM responses + plain-English criteria
-- Claude-as-judge (or any supported provider) scores each output
-- Returns: pass/fail, confidence score (0–1), and reasoning
-- Batch CSV mode: run hundreds of evals, get a Markdown/CSV report
-- Single-shot mode: test one response in the terminal, see results instantly
-- `--threshold` flag: set the pass rate you need (e.g. `--threshold 0.85`)
-
-## Why This Exists
-
-OpenAI's o4-mini hallucinates 48% of the time on structured output tasks. Evals are the #1 unsolved problem in production AI systems. Most teams skip them because building an eval harness from scratch is painful. This makes it a 10-minute setup.
-
-## Why I Built This
-
-I built an eval harness like this at Google from scratch — no playbook existed. `llm-judge` packages what I learned into something anyone can clone and run.
+You define what "good" looks like in plain English. The tool runs the prompt, gets a response, and uses a second LLM to score it against your criteria. Pass, fail, confidence, reasoning — in one command.
 
 ---
 
-## Planned Features
+## What it does
 
-- Rubric DSL: define structured criteria in YAML
-- Batch CSV eval with aggregate pass rate
-- Markdown + CSV report output
-- `--threshold` flag for pass rate requirements
-- Multi-LLM support: Anthropic, OpenAI, Gemini, Custom
+- Send any prompt to any supported model (Anthropic, OpenAI, Gemini, custom)
+- Define 1–5 plain-English criteria for what a good response looks like
+- An LLM judge (same or different provider) scores each criterion independently
+- Returns: PASS/FAIL per criterion, confidence score, one-line reasoning per verdict
+- Optionally use a different provider for the judge than for the model being evaluated
+
+---
+
+## Quick start
+
+```bash
+git clone https://github.com/hari1405/useful_llm_services.git
+cd useful_llm_services/tools/llm-judge
+pip install -r requirements.txt
+
+export GOOGLE_API_KEY=your-key-here
+
+python judge.py \
+  --prompt "What is the boiling point of water?" \
+  --criteria "Answer must state 100°C or 212°F" \
+  --criteria "Answer must be under 50 words" \
+  --model gemini
+```
+
+---
+
+## Example output
+
+```
+⚖️  LLM Judge
+──────────────────────────────────────────────
+Prompt:   What is the boiling point of water?
+Model:    gemini-3.1-flash-lite  (gemini)
+Judge:    gemini-3.1-flash-lite  (gemini)
+
+Model response:
+  Water boils at 100°C (212°F) at standard atmospheric pressure (1 atm).
+
+Evaluation
+──────────────────────────────────────────────
+✅  Answer must state 100°C or 212°F
+    "Response explicitly states both 100°C and 212°F."
+
+✅  Answer must be under 50 words
+    "Response is 13 words, well within the 50-word limit."
+
+──────────────────────────────────────────────
+Verdict:     ✅ PASS  (2/2 criteria met)
+Confidence:  0.97
+Tokens:      411  (~$0.00006)
+Time:        2.1s
+```
+
+---
+
+## All options
+
+```bash
+python judge.py \
+  --prompt "Explain what a transformer is" \
+  --criteria "Must mention attention mechanism" \
+  --criteria "Must be understandable to a non-engineer" \
+  --criteria "Must be under 100 words" \
+  --model anthropic \
+  --judge gemini \
+  --model-key sk-ant-... \
+  --judge-key AIza...
+```
+
+Run `python judge.py --help` for full options.
+
+---
+
+## What I learned
+
+Building an LLM-as-judge well is harder than it looks. The single biggest lesson: criteria must be written as falsifiable statements, not preferences. "Be concise" is useless. "Response must be under 50 words" is a criterion. The judge needs something it can check, not something it can feel.
+
+The second lesson: use a different provider as judge than the model being tested. Same-model judging inflates pass rates by 15–20% in my experience.
+
+---
+
+## Stack
+
+- Python 3.11+
+- [Typer](https://typer.tiangolo.com/) — CLI
+- [Rich](https://github.com/Textualize/rich) — terminal output
+- [Anthropic SDK](https://github.com/anthropics/anthropic-sdk-python) — Claude
+- [google-genai](https://github.com/googleapis/python-genai) — Gemini
+- [openai](https://github.com/openai/openai-python) — OpenAI + custom endpoints
 
 ---
 
 ## ⚠️ BYOK — Bring Your Own Key
 
-Will support the same four providers as the rest of this series:
-
-| Provider | Env Variable |
-|---|---|
-| Anthropic (Claude) | `ANTHROPIC_API_KEY` |
-| OpenAI (GPT) | `OPENAI_API_KEY` |
-| Google (Gemini) | `GOOGLE_API_KEY` |
-| Custom endpoint | `CUSTOM_API_KEY` + `CUSTOM_BASE_URL` |
+| Provider | Env Variable | Get Key |
+|---|---|---|
+| Anthropic (Claude) | `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com/) |
+| OpenAI (GPT) | `OPENAI_API_KEY` | [platform.openai.com](https://platform.openai.com/api-keys) |
+| Google (Gemini) | `GOOGLE_API_KEY` | [aistudio.google.com](https://aistudio.google.com/app/apikey) |
+| Custom endpoint | `CUSTOM_API_KEY` + `CUSTOM_BASE_URL` | Your provider's docs |
 
 ---
 
-*Open source. MIT License. BYOK.*
+*Open source. MIT License. Follow the build log on [LinkedIn](https://www.linkedin.com/in/hp1598/).*
