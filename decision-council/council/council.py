@@ -135,6 +135,9 @@ class DecisionCouncil:
           on_persona_start(persona) — called before each critique
           on_persona_done(response) — called after each critique
         """
+        if not personas:
+            raise ValueError("At least one persona is required to run the council.")
+
         responses: list[PersonaResponse] = []
         total_tokens = 0
         total_start = time.time()

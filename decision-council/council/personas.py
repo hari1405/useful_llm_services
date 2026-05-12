@@ -178,10 +178,12 @@ Give 4-6 executive-level challenge questions. Be direct. No jargon. No fluff."""
 ]
 
 PERSONA_MAP: dict[str, Persona] = {p.name: p for p in DEFAULT_PERSONAS}
+_PERSONA_MAP_LOWER: dict[str, Persona] = {p.name.lower(): p for p in DEFAULT_PERSONAS}
 
 
 def get_persona(name: str) -> Optional[Persona]:
-    return PERSONA_MAP.get(name)
+    """Look up a persona by name (case-insensitive)."""
+    return PERSONA_MAP.get(name) or _PERSONA_MAP_LOWER.get(name.lower())
 
 
 def list_personas() -> list[tuple[str, str, str]]:

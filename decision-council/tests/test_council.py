@@ -362,3 +362,148 @@ class TestMockProvider:
         assert len(mock.calls) == 2
         assert mock.calls[0]["system"] == "sys1"
         assert mock.calls[1]["model"] == "m2"
+
+
+# ── Empty persona guard ───────────────────────────────────────────────────────
+
+class TestEmptyPersonaGuard:
+    def test_run_with_empty_list_raises(self):
+        council, _ = make_council()
+        with pytest.raises(ValueError, match="At least one persona"):
+            council.run(SAMPLE_PROPOSAL, [])
+
+    def test_run_with_single_persona_works(self):
+        council, _ = make_council()
+        session = council.run(SAMPLE_PROPOSAL, [DEFAULT_PERSONAS[0]])
+        assert len(session.responses) == 1
+
+
+# ── Synthesis validation ──────────────────────────────────────────────────────
+
+class TestSynthesis:
+    def test_synthesis_prompt_includes_all_critiques(self):
+        """The synthesiser should receive all persona critiques in its prompt."""
+        council, mock = make_council("Persona-specific critique.")
+        personas = DEFAULT_PERSONAS[:3]
+        council.run(SAMPLE_PROPOSAL, personas)
+
+        # Synthesis is the last call — persona count + 1
+        assert len(mock.calls) == len(personas) + 1
+        synthesis_call = mock.calls[-1]
+
+        # All persona names appear in the synthesis user prompt
+        for p in personas:
+            assert p.name in synthesis_call["user"]
+
+    def test_synthesis_system_prompt_requests_battle_brief(self):
+        council, mock = make_council()
+        council.run(SAMPLE_PROPOSAL, [DEFAULT_PERSONAS[0]])
+
+        synthesis_call = mock.calls[-1]
+        assert "Battle Brief" in synthesis_call["system"]
+        assert "Top 3 Hardest Questions" in synthesis_call["system"]
+
+    def test_synthesis_tokens_counted(self):
+        council, _ = make_council(tokens=100)
+        session = council.run(SAMPLE_PROPOSAL, [DEFAULT_PERSONAS[0]])
+        # 1 persona × 100 + 1 synthesis × 100 = 200
+        assert session.total_tokens == 200
+
+
+# ── env_var_for_provider ──────────────────────────────────────────────────────
+
+class TestEnvVarForProvider:
+    def test_anthropic_env_var(self):
+        from council.providers import env_var_for_provider
+        assert env_var_for_provider("anthropic") == "ANTHROPIC_API_KEY"
+
+    def test_openai_env_var(self):
+        from council.providers import env_var_for_provider
+        assert env_var_for_provider("openai") == "OPENAI_API_KEY"
+
+    def test_gemini_env_var(self):
+        from council.providers import env_var_for_provider
+        assert env_var_for_provider("gemini") == "GOOGLE_API_KEY"
+
+    def test_custom_env_var(self):
+        from council.providers import env_var_for_provider
+        assert env_var_for_provider("custom") == "CUSTOM_API_KEY"
+
+    def test_unknown_provider_returns_default(self):
+        from council.providers import env_var_for_provider
+        assert env_var_for_provider("unknown") == "API_KEY"
+
+
+# ── Provider factory — OpenAI & Gemini with keys ─────────────────────────────
+
+class TestProviderFactoryExtended:
+    def test_get_openai_with_key(self):
+        from council.providers import OpenAIProvider
+        with patch.object(OpenAIProvider, "__init__", return_value=None):
+            provider = get_provider(PROVIDER_OPENAI, api_key="sk-test")
+            assert isinstance(provider, OpenAIProvider)
+
+    def test_get_gemini_with_key(self):
+        from council.providers import GeminiProvider
+        with patch.object(GeminiProvider, "__init__", return_value=None):
+            provider = get_provider(PROVIDER_GEMINI, api_key="AI-test")
+            assert isinstance(provider, GeminiProvider)
+
+    def test_get_openai_from_env(self, monkeypatch):
+        monkeypatch.setenv("OPENAI_API_KEY", "sk-env")
+        from council.providers import OpenAIProvider
+        with patch.object(OpenAIProvider, "__init__", return_value=None):
+            provider = get_provider(PROVIDER_OPENAI)
+            assert isinstance(provider, OpenAIProvider)
+
+    def test_get_gemini_from_env(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_API_KEY", "AI-env")
+        from council.providers import GeminiProvider
+        with patch.object(GeminiProvider, "__init__", return_value=None):
+            provider = get_provider(PROVIDER_GEMINI)
+            assert isinstance(provider, GeminiProvider)
+
+
+# ── Markdown export edge cases ────────────────────────────────────────────────
+
+class TestMarkdownExportEdgeCases:
+    def test_short_proposal_no_truncation(self):
+        council, _ = make_council()
+        short = "Short proposal."
+        session = council.run(short, [DEFAULT_PERSONAS[0]])
+        md = DecisionCouncil.to_markdown(session)
+        assert "..." not in md.split("\n")[2]  # proposal line
+        assert short in md
+
+    def test_markdown_contains_context_if_present(self):
+        council, _ = make_council()
+        session = council.run(SAMPLE_PROPOSAL, [DEFAULT_PERSONAS[0]], context=SAMPLE_CONTEXT)
+        md = DecisionCouncil.to_markdown(session)
+        assert "Decision Council Report" in md
+
+    def test_markdown_contains_synthesis_header(self):
+        council, _ = make_council()
+        session = council.run(SAMPLE_PROPOSAL, [DEFAULT_PERSONAS[0]])
+        md = DecisionCouncil.to_markdown(session)
+        assert "Battle Brief" in md
+
+    def test_markdown_footer_has_token_count(self):
+        council, _ = make_council(tokens=500)
+        session = council.run(SAMPLE_PROPOSAL, [DEFAULT_PERSONAS[0]])
+        md = DecisionCouncil.to_markdown(session)
+        assert "1,000" in md  # 500 persona + 500 synthesis
+
+
+# ── Elapsed time tracking ─────────────────────────────────────────────────────
+
+class TestElapsedTime:
+    def test_session_has_positive_elapsed(self):
+        council, _ = make_council()
+        session = council.run(SAMPLE_PROPOSAL, [DEFAULT_PERSONAS[0]])
+        assert session.total_elapsed >= 0
+
+    def test_critique_has_positive_elapsed(self):
+        council, _ = make_council()
+        response = council.critique(SAMPLE_PROPOSAL, DEFAULT_PERSONAS[0])
+        assert response.elapsed_seconds >= 0
+

@@ -119,3 +119,59 @@ class TestBuildCustomPersona:
         assert p1.name != p2.name
         assert "Role A" not in p2.system_prompt
         assert "Role B" not in p1.system_prompt
+
+
+# ── Case-insensitive lookup ────────────────────────────────────────────────────
+
+class TestCaseInsensitiveLookup:
+    def test_exact_match(self):
+        assert get_persona("The CFO") is not None
+
+    def test_lowercase_match(self):
+        assert get_persona("the cfo") is not None
+        assert get_persona("the cfo").name == "The CFO"
+
+    def test_uppercase_match(self):
+        assert get_persona("THE CFO") is not None
+
+    def test_mixed_case_match(self):
+        assert get_persona("the Skeptical Eng") is not None
+
+    def test_all_personas_findable_lowercase(self):
+        for p in DEFAULT_PERSONAS:
+            found = get_persona(p.name.lower())
+            assert found is not None, f"Could not find persona with lowercase: {p.name.lower()}"
+            assert found.name == p.name
+
+
+# ── Persona field validation ──────────────────────────────────────────────────
+
+class TestPersonaFieldValidation:
+    def test_all_emojis_are_unique(self):
+        emojis = [p.emoji for p in DEFAULT_PERSONAS]
+        assert len(emojis) == len(set(emojis)), "Duplicate emojis found"
+
+    def test_all_styles_are_non_empty(self):
+        for p in DEFAULT_PERSONAS:
+            assert p.style, f"Persona {p.name} has empty style"
+
+    def test_exactly_eight_default_personas(self):
+        assert len(DEFAULT_PERSONAS) == 8
+
+
+# ── Custom persona edge cases ─────────────────────────────────────────────────
+
+class TestCustomPersonaEdgeCases:
+    def test_custom_persona_empty_extra_context(self):
+        p = build_custom_persona("Test", "Tester", "🧪", "Testing")
+        assert isinstance(p, Persona)
+        assert "Testing" in p.system_prompt
+
+    def test_custom_persona_focus_in_prompt(self):
+        p = build_custom_persona("Auditor", "Internal Auditor", "🔍", "Risk management")
+        assert "Risk management" in p.system_prompt
+
+    def test_custom_persona_style_auto_generated(self):
+        p = build_custom_persona("X", "Y", "🔥", "Focus Z")
+        assert "Focus Z" in p.style
+

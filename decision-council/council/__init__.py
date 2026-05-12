@@ -16,6 +16,7 @@ from .providers import (
     PROVIDER_GEMINI,
     PROVIDER_CUSTOM,
     get_provider,
+    env_var_for_provider,
 )
 
 __version__ = "0.2.0"
@@ -44,4 +45,6 @@ __all__ = [
     "OpenAIProvider",
     "GeminiProvider",
     "CustomProvider",
+    # Provider utilities
+    "env_var_for_provider",
 ]

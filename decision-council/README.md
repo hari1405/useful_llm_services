@@ -163,7 +163,7 @@ pip install pytest
 pytest tests/ -v
 ```
 
-All tests are mocked — **no API key required** to run the test suite.
+All 98 tests are mocked — **no API key required** to run the test suite. A separate live API smoke test is included for Gemini verification.
 
 ---
 
@@ -202,12 +202,15 @@ decision-council/
 │   ├── personas.py       # 8 default personas
 │   └── providers.py      # LLM provider abstraction
 ├── tests/
-│   ├── test_council.py   # 39 tests — all mocked
-│   └── test_personas.py  # Persona validation
+│   ├── test_council.py   # 60 tests — all mocked
+│   ├── test_personas.py  # 27 tests — persona validation
+│   ├── test_cli.py       # 11 tests — CLI commands
+│   └── test_live_api.py  # Live API smoke test (Gemini)
 ├── examples/
 │   └── sample_proposal.txt
 ├── requirements.txt
 ├── setup.py
+├── test_report.md
 ├── LICENSE
 └── README.md
 ```
