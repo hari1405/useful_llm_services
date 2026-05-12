@@ -4,7 +4,7 @@
 
 Built by [Hariprasad Rengarajan](https://www.linkedin.com/in/hp1598/) — AI Strategist at Google (AI Garage, PeopleOps). MS CS, Georgia Tech.
 
-This repo has two tracks. Both grow as long as there are real problems worth solving.
+This repo has two tracks. Both grow continuosly to support more usefull tools and skills.
 
 ---
 
@@ -68,8 +68,6 @@ All tools read keys from environment variables. No config files, no accounts, no
 ## What makes this different
 
 Every tool here was built by someone who has shipped AI products at Google, Nextiva, and Zoho — not someone learning AI for the first time. The design choices reflect that: no framework abstractions, honest error messages, observable pipelines, and tests that run without an API key.
-
-A tool that exists to pad a portfolio is worse than no tool at all. This repo grows only when there is a real problem worth solving.
 
 ---
 
