@@ -4,7 +4,7 @@ LLM Provider abstraction for Decision Council.
 Supports:
   - Anthropic (Claude models) — via anthropic SDK
   - OpenAI (GPT models)       — via openai SDK
-  - Gemini                    — via OpenAI-compatible endpoint (google)
+  - Gemini                    — via official google-genai SDK
   - Custom                    — any OpenAI-compatible base URL
 
 Usage:
@@ -36,10 +36,6 @@ DEFAULT_MODELS = {
     PROVIDER_GEMINI:    "gemini-2.0-flash",
     PROVIDER_CUSTOM:    "gpt-4o-mini",
 }
-
-# Gemini's OpenAI-compatible base URL
-GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
-
 
 # ── Result type ────────────────────────────────────────────────────────────────
 
@@ -127,35 +123,29 @@ class OpenAIProvider(LLMProvider):
         return CompletionResult(text=text, tokens_used=tokens)
 
 
-# ── Gemini (via OpenAI-compatible endpoint) ────────────────────────────────────
+# ── Gemini (via official google-genai SDK) ─────────────────────────────────────
 
 class GeminiProvider(LLMProvider):
-    """
-    Uses Google Gemini via its OpenAI-compatible REST endpoint.
-    Requires GOOGLE_API_KEY. Uses openai SDK under the hood.
-    """
+    """Uses the official Google GenAI SDK. Requires GOOGLE_API_KEY."""
 
     name = PROVIDER_GEMINI
 
     def __init__(self, api_key: str):
-        import openai as _openai
-        self.client = _openai.OpenAI(
-            api_key=api_key,
-            base_url=GEMINI_BASE_URL,
-        )
+        from google import genai as _genai
+        self.client = _genai.Client(api_key=api_key)
 
     def complete(self, *, system: str, user: str, model: str, max_tokens: int = 1024) -> CompletionResult:
-        response = self.client.chat.completions.create(
+        from google.genai import types as _types
+        response = self.client.models.generate_content(
             model=model,
-            max_tokens=max_tokens,
-            messages=[
-                {"role": "system", "content": system},
-                {"role": "user", "content": user},
-            ],
+            contents=user,
+            config=_types.GenerateContentConfig(
+                system_instruction=system,
+                max_output_tokens=max_tokens,
+            ),
         )
-        text = response.choices[0].message.content
-        usage = response.usage
-        tokens = (usage.prompt_tokens + usage.completion_tokens) if usage else 0
+        text = response.text
+        tokens = response.usage_metadata.total_token_count if response.usage_metadata else 0
         return CompletionResult(text=text, tokens_used=tokens)
 
 

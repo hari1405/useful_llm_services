@@ -12,6 +12,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "anthropic>=0.40.0",
+        "google-genai>=0.5.0",
         "openai>=1.0.0",
         "rich>=13.7.0",
         "typer>=0.12.0",
