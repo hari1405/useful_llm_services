@@ -10,7 +10,7 @@ Usage:
 
 Expected output:
     ✅ Live API test passed — Gemini is working.
-    Provider: gemini | Model: gemini-3-flash
+    Provider: gemini | Model: gemini-3.1-flash-lite
     Tokens used: <number> | Time: <seconds>s
     --- CFO critique (first 200 chars) ---
     <critique text>
@@ -49,14 +49,14 @@ def main():
         council = DecisionCouncil(
             provider="gemini",
             api_key=api_key,
-            model="gemini-3-flash",
+            model="gemini-3.1-flash-lite",
             max_tokens=256,  # Keep response short to save quota
         )
 
         response = council.critique(proposal, persona)
 
         print(f"✅ Live API test passed — Gemini is working.")
-        print(f"   Provider: gemini | Model: gemini-3-flash")
+        print(f"   Provider: gemini | Model: gemini-3.1-flash-lite")
         print(f"   Tokens used: {response.tokens_used} | Time: {response.elapsed_seconds}s")
         print()
         print(f"--- {persona.emoji} {persona.name} critique (first 300 chars) ---")
