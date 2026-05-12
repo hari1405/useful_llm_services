@@ -10,7 +10,7 @@
 
 ## Status: 🚧 Coming Week of Mar 23, 2026
 
-This package is in active development. Follow along on [LinkedIn](https://linkedin.com/in/hariprasad-rengarajan) for the build log.
+This package is in active development. Follow along on [LinkedIn](https://www.linkedin.com/in/hp1598/) for the build log.
 
 ---
 

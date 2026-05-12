@@ -37,8 +37,8 @@ export GOOGLE_API_KEY=AI-your-key-here
 
 ```bash
 # 1. Clone
-git clone https://github.com/hariprasadrengarajan/useful-llm-services.git
-cd useful-llm-services/decision-council
+git clone https://github.com/hari1405/useful_llm_services.git
+cd useful_llm_services/tools/decision-council
 
 # 2. Install
 pip install -r requirements.txt
@@ -219,9 +219,9 @@ decision-council/
 
 ## Built By
 
-[Hariprasad Rengarajan](https://linkedin.com/in/hariprasad-rengarajan) — AI Strategist at Google.
+[Hariprasad Rengarajan](https://www.linkedin.com/in/hp1598/) — AI Strategist at Google.
 
-Part of a weekly series: one focused, runnable AI tool, every week. Follow along on [LinkedIn](https://linkedin.com/in/hariprasad-rengarajan) for the build log.
+Part of a weekly series: one focused, runnable AI tool, every week. Follow along on [LinkedIn](https://www.linkedin.com/in/hp1598/) for the build log.
 
 ---
 

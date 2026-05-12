@@ -7,7 +7,7 @@ setup(
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="Hariprasad Rengarajan",
-    url="https://github.com/hariprasadrengarajan/useful-llm-services",
+    url="https://github.com/hari1405/useful_llm_services",
     python_requires=">=3.10",
     packages=find_packages(),
     install_requires=[
