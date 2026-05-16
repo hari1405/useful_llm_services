@@ -28,7 +28,10 @@ Expected output:
 import os
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_tool_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_repo_root = os.path.dirname(os.path.dirname(_tool_root))
+sys.path.insert(0, _tool_root)                           # tools/llm-judge
+sys.path.insert(0, os.path.join(_repo_root, "shared"))  # shared/
 
 from live_harness import LiveTestRunner
 from llm_judge.batch import BatchItem, load_batch, run_batch
