@@ -1,8 +1,12 @@
 """
 Reusable live test harness for useful-llm-services tools.
 
-Copy this file into any tool's tests/ directory. Each tool's live test
-file imports LiveTestRunner and provides its own test cases as callables.
+Canonical location: shared/live_harness.py (repo root)
+Import in any tool's live test file by inserting the repo root into sys.path:
+
+    import sys, os
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "shared"))
+    from live_harness import LiveTestRunner
 
 Usage pattern:
     runner = LiveTestRunner("my-tool")
@@ -26,7 +30,7 @@ from __future__ import annotations
 import os
 import sys
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Callable, Optional, Tuple, Union
 
 
@@ -51,6 +55,7 @@ class LiveTestRunner:
     Runs a sequence of live test cases and prints a unified report.
 
     Each case is a callable that returns (passed, summary, tokens, elapsed).
+    Short 2-tuple (passed, summary) is also accepted — tokens/elapsed default to 0.
     The runner accumulates results and exits 0 only if all cases pass.
     """
 
@@ -59,13 +64,7 @@ class LiveTestRunner:
         self._cases: list[CaseResult] = []
 
     def require_env(self, var: str, hint: str = "") -> str:
-        """
-        Return the value of an env var or exit 1 with a clear message.
-
-        Args:
-            var:  environment variable name
-            hint: optional extra instruction shown on failure
-        """
+        """Return the value of an env var or exit 1 with a clear message."""
         value = os.environ.get(var, "").strip()
         if not value:
             print(f"❌  {var} not set.")
@@ -77,13 +76,7 @@ class LiveTestRunner:
         return value
 
     def run_case(self, label: str, fn: TestCallable) -> None:
-        """
-        Run one test case and record the result.
-
-        Args:
-            label: human-readable name shown in output (e.g. "single mode")
-            fn:    callable returning (passed, summary, tokens_used, elapsed_seconds)
-        """
+        """Run one test case and record the result."""
         print(f"🔄  [{label}] running...", flush=True)
         wall_start = time.time()
         try:
@@ -139,7 +132,7 @@ class LiveTestRunner:
         print("─" * 50)
 
         if passed_n == total_n:
-            print(f"✅  All live tests passed.")
+            print("✅  All live tests passed.")
             sys.exit(0)
         else:
             failed = [c.label for c in self._cases if not c.passed]
