@@ -27,12 +27,13 @@ import os
 import sys
 import time
 from dataclasses import dataclass, field
-from typing import Callable, Optional, Tuple
+from typing import Callable, Optional, Tuple, Union
 
 
-# Return type for test callables:
-#   (passed: bool, summary: str, tokens_used: int, elapsed_seconds: float)
-TestCallable = Callable[[], Tuple[bool, str, int, float]]
+# Return type for test callables — two forms accepted:
+#   Full:  (passed, summary, tokens_used, elapsed_seconds)  — direct API / batch mode
+#   Short: (passed, summary)                                 — A2A / MCP (tokens unknown)
+TestCallable = Callable[[], Union[Tuple[bool, str, int, float], Tuple[bool, str]]]
 
 
 @dataclass
@@ -86,7 +87,12 @@ class LiveTestRunner:
         print(f"🔄  [{label}] running...", flush=True)
         wall_start = time.time()
         try:
-            passed, summary, tokens, elapsed = fn()
+            raw = fn()
+            if len(raw) == 2:
+                passed, summary = raw  # type: ignore[misc]
+                tokens, elapsed = 0, 0.0
+            else:
+                passed, summary, tokens, elapsed = raw  # type: ignore[misc]
             case = CaseResult(
                 label=label,
                 passed=passed,
