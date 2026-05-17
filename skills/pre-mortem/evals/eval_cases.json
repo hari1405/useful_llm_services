@@ -1,0 +1,47 @@
+[
+  {
+    "id": "case_01_internal_ai_tool",
+    "label": "Internal AI tool launch — execution + second-order risk",
+    "input": "We're rolling out an AI meeting summarizer to all 1,200 employees next month. It integrates with Zoom and Google Calendar. Legal has approved it. The goal is to cut post-meeting documentation time by 50%.",
+    "expected_behaviors": [
+      "Uses past tense throughout — 'it failed because' not 'it might fail because'",
+      "Sets a specific future date, not 'in the future'",
+      "Identifies a failure chain with at least 3 linked steps — not a flat list",
+      "Names second-order failure type as a candidate (tool works → surfaces a new problem)",
+      "Kill shots are specific to THIS tool — not generic 'adoption was low'",
+      "Early warning signals are observable without special tooling",
+      "30/60/90 day signals exist for each kill shot",
+      "'What to change now' is a pre-launch action, not a monitoring plan",
+      "Does NOT contain trendslop like 'in today's AI landscape'"
+    ],
+    "disqualifying_behaviors": [
+      "Uses future tense ('this might fail', 'could cause issues')",
+      "Kill shots are generic (budget, leadership, adoption) without specific mechanisms",
+      "No failure chain — just a list of risks",
+      "Early warning signals require building new instrumentation to detect",
+      "Omits the 'What to change now' section"
+    ]
+  },
+  {
+    "id": "case_02_ai_product_launch",
+    "label": "External AI product launch — assumption failure dominance",
+    "input": "We're launching an AI-powered expense reporting tool for finance teams at mid-market companies (200–2000 employees). It auto-categorizes receipts, flags policy violations, and drafts exception requests. Pricing is $8/user/month. We go live in 10 weeks with 3 design partners. Target: 50 paying customers in 6 months.",
+    "expected_behaviors": [
+      "Identifies assumption failure as primary type (buyer, workflow, willingness-to-pay assumptions)",
+      "Failure chain traces from a specific wrong assumption to a terminal event",
+      "Kill shot #1 is specific to finance/expense domain — not generic SaaS failure",
+      "Flags concentration risk on 3 design partners shaping a 50-customer target",
+      "Second-order kill shot candidate: design partners are outliers, not representative of real ICP",
+      "Early warning: 30-day signal detectable from design partner behavior before broad launch",
+      "Past tense maintained throughout",
+      "'What to change now' includes at least one change to the design partner selection or process"
+    ],
+    "disqualifying_behaviors": [
+      "Future tense anywhere in the output",
+      "Kill shots don't reference the finance/expense domain specifically",
+      "Failure chain shorter than 3 links",
+      "No signal for the design-partner assumption risk",
+      "Generic 'competition' kill shot without naming a specific competitor or mechanism"
+    ]
+  }
+]

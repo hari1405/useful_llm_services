@@ -1,0 +1,66 @@
+[
+  {
+    "id": "case_01_overconfident",
+    "label": "Overconfident plan with structural holes",
+    "description": "A plan with multiple load-bearing assumptions, no evidence, and a circular logic chain. Skill should surface all structural issues.",
+    "input": "We're going to build an AI-powered legal contract review tool for SMBs. The legal AI market is huge and growing fast. SMBs don't have in-house counsel and are underserved. We'll price at $99/month and get to 50,000 customers in 18 months through product-led growth. The product will review contracts in under 60 seconds and flag risky clauses.",
+    "expected_behaviors": [
+      "Surfaces assumption that SMBs trust AI for legal decisions (high-stakes domain with liability concerns)",
+      "Challenges '50,000 customers in 18 months via PLG' with no acquisition cost or conversion rate model",
+      "Identifies that legal AI has liability exposure — what happens when the tool misses a risky clause?",
+      "Asks about regulatory risk (UPL — unauthorized practice of law in some jurisdictions)",
+      "Pre-mortem names a specific failure mechanism, not a generic one",
+      "Forcing questions change the plan direction if answered honestly",
+      "Does NOT open with agreement or validation",
+      "Does NOT contain trendslop phrases like 'rapidly evolving legal landscape'"
+    ],
+    "disqualifying_behaviors": [
+      "Opens with agreement or positive framing before challenge",
+      "Lists generic risks without naming specific mechanisms",
+      "Fails to flag UPL regulatory risk",
+      "Retreats on any point without requesting evidence",
+      "Pre-mortem is abstract ('the product failed to gain traction')"
+    ]
+  },
+  {
+    "id": "case_02_vague_strategy",
+    "label": "Vague strategy statement — direction without substance",
+    "description": "A high-level directional statement with no specifics. Skill should not validate the direction — it should surface what must be true for the direction to be valid.",
+    "input": "Our AI strategy for 2026 is to become the AI-first company in our industry. We're going to embed AI across all our products, build internal AI literacy, and create an AI Center of Excellence. This will help us compete with AI-native startups and future-proof the business.",
+    "expected_behaviors": [
+      "Identifies that 'AI-first' is undefined — flags as a trendslop-level claim without operational definition",
+      "Surfaces assumption that an AI CoE is the right structure vs. embedding AI capability in product teams",
+      "Challenges 'future-proof' framing — asks what specific competitive threat this addresses",
+      "Notes that 'embed AI across all products' is not a strategy — it is a mandate without prioritization criteria",
+      "Forcing questions ask: which product, which users, which metric, in what timeframe",
+      "Pre-mortem names the organizational failure mode (CoE becomes a bottleneck, product teams wait 6 months for AI support)",
+      "Does NOT produce a supportive summary of the direction"
+    ],
+    "disqualifying_behaviors": [
+      "Praises the ambition or direction before challenging",
+      "Asks only clarifying questions instead of forcing questions",
+      "Produces a roadmap or implementation plan rather than a challenge",
+      "Accepts 'AI-first' as a meaningful strategic anchor without interrogating it"
+    ]
+  },
+  {
+    "id": "case_03_solid_strategy",
+    "label": "Genuinely solid strategy — challenge without tearing down",
+    "description": "A well-constructed plan with real evidence and specifics. Skill should still find real pressure points but acknowledge what holds with genuine specificity.",
+    "input": "We're doubling down on our vertical AI strategy for mid-market healthcare revenue cycle management. We have 3 years of labeled claims data from 47 hospital systems, a signed 3-year contract with our anchor customer (1,200 seats), and a partnership with Epic for native integration. Our expansion plan is to move from denial management to prior authorization — same buyers, adjacent workflow, $40M TAM expansion. We're not doing anything else in 2026.",
+    "expected_behaviors": [
+      "Still finds real pressure points — e.g., Epic partnership terms (exclusivity? revenue share?), prior auth regulatory environment (CMS rules changing in 2026), concentration risk on anchor customer",
+      "Does NOT manufacture generic risks to seem thorough",
+      "'What holds' section is genuinely specific — names the labeled data moat, the vertical focus, the buyer adjacency as real strengths",
+      "Forcing questions are still directionally consequential — not just 'what's your timeline?'",
+      "Pre-mortem is specific to the healthcare RCM context, not generic",
+      "Challenge maintains rigor even though the plan is strong"
+    ],
+    "disqualifying_behaviors": [
+      "Treats 'solid plan' as a reason to reduce challenge depth",
+      "Produces a 'What holds' section that is longer than the challenge sections",
+      "Invents risks that are not grounded in the specifics of this plan",
+      "Fails to flag Epic partnership dependency or prior auth regulatory exposure"
+    ]
+  }
+]
