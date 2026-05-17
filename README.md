@@ -18,25 +18,9 @@ Every tool:
 - Ships with a full mocked test suite — no API key needed to run tests
 - Costs roughly what a coffee costs to use
 
-| Tool | What it does | Status |
-|------|-------------|--------|
-| [🏛️ decision-council](./tools/decision-council/) | Send any proposal to 8 AI critics. Get a Battle Brief: hardest questions, biggest assumption, how to prep. | ✅ Live |
-| [⚖️ llm-judge](./tools/llm-judge/) | Eval harness for LLM outputs. Plain-English criteria. Pass/fail with reasoning. Batch mode. | 🚧 Coming soon |
-| [🧪 persona-lab](./tools/persona-lab/) | Synthetic user interview simulator. 10 conversations in 2 minutes. Synthesised brief included. | 🚧 Coming soon |
-
----
-
 ## Track 2 — Skills
 
 Model-agnostic instruction sets that make Claude and Gemini better at specific recurring tasks — evals, PRDs, RAG review, agent design. Copy a folder, and it works immediately.
-
-| Skill | What it encodes | Status |
-|-------|----------------|--------|
-| `ai-pm-spec` | Write PRDs the way an experienced AI PM would — with eval criteria, fallback states, and measurable success metrics | 🚧 Coming soon |
-| `llm-eval-design` | Design eval suites from scratch — right eval type, LLM-as-judge rubrics, regression detection | 🚧 Coming soon |
-| `rag-reviewer` | Review any RAG pipeline — diagnose chunking vs retrieval vs generation failures | 🚧 Coming soon |
-| `agent-design-review` | Checklist for multi-agent systems — tool scope, failure modes, cost runaway, observability | 🚧 Coming soon |
-| `voice-to-structure` | Extract structured information from messy spoken transcripts | 🚧 Coming soon |
 
 ---
 
